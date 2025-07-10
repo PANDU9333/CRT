@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tic Tac Toe - Stylish</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e07912, #632897);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      color: #fff;
+      text-shadow: 2px 2px #444;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 120px);
+      gap: 10px;
+    }
+
+    .cell {
+      width: 120px;
+      height: 120px;
+      background-color: #fff;
+      font-size: 48px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .cell:hover {
+      background-color: #f0f8ff;
+      transform: scale(1.05);
+    }
+
+    .cell.winning {
+      background-color: #c1ffd7;
+      animation: glow 0.8s infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 10px #6effc2;
+      }
+      to {
+        box-shadow: 0 0 20px #3df1a9;
+      }
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 24px;
+      color: #fff;
+      height: 30px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 25px;
+      font-size: 18px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tic Tac Toe</h1>
+  <div class="board" id="board">
+    <div class="cell" data-index="0"></div>
+    <div class="cell" data-index="1"></div>
+    <div class="cell" data-index="2"></div>
+    <div class="cell" data-index="3"></div>
+    <div class="cell" data-index="4"></div>
+    <div class="cell" data-index="5"></div>
+    <div class="cell" data-index="6"></div>
+    <div class="cell" data-index="7"></div>
+    <div class="cell" data-index="8"></div>
+  </div>
+
+  <div class="message" id="message"></div>
+  <button onclick="resetGame()">Reset Game</button>
+
+  <script>
+    const board = document.querySelectorAll('.cell');
+    const message = document.getElementById('message');
+    let currentPlayer = 'X';
+    let gameActive = true;
+    let boardState = ["", "", "", "", "", "", "", "", ""];
+
+    const winningCombinations = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8], 
+      [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    board.forEach(cell => {
+      cell.addEventListener('click', () => {
+        const index = cell.getAttribute('data-index');
+        if (boardState[index] === "" && gameActive) {
+          boardState[index] = currentPlayer;
+          cell.textContent = currentPlayer;
+          if (checkWinner()) {
+            message.textContent = currentPlayer + ' Wins!';
+            gameActive = false;
+          } else if (!boardState.includes("")) {
+            message.textContent = "It's a Draw!";
+            gameActive = false;
+          } else {
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            message.textContent = currentPlayer + "'s Turn";
+          }
+        }
+      });
+    });
+
+    function checkWinner() {
+      for (let combo of winningCombinations) {
+        const [a, b, c] = combo;
+        if (
+          boardState[a] &&
+          boardState[a] === boardState[b] &&
+          boardState[a] === boardState[c]
+        ) {
+          document.querySelector(`[data-index="${a}"]`).classList.add('winning');
+          document.querySelector(`[data-index="${b}"]`).classList.add('winning');
+          document.querySelector(`[data-index="${c}"]`).classList.add('winning');
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function resetGame() {
+      boardState = ["", "", "", "", "", "", "", "", ""];
+      board.forEach(cell => {
+        cell.textContent = "";
+        cell.classList.remove('winning');
+      });
+      currentPlayer = 'X';
+      gameActive = true;
+      message.textContent = "";
+    }
+  </script>
+
+</body>
+</html>
